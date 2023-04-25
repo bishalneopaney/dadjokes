@@ -3,6 +3,7 @@ name: Docker CI
 on:
   workflow_dispatch:
   
+    
 jobs:
   build:
     name: Docker build
@@ -27,9 +28,14 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
+          #tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
+          #cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
+          #cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
+          
+          tags: |
+            my-docker-image:latest
+            my-docker-image:${{ github.sha }}
+            my-docker-image:${{ steps.get-latest-tag.outputs.TAG }}-$(date +%Y%m%d%H%M%S)
           
           
           
