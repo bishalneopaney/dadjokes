@@ -21,26 +21,13 @@ jobs:
           username: '${{ secrets.DOCKERHUB_USERNAME }}'
           password: '${{ secrets.DOCKERHUB_PASSWORD }}'
 
-      #- name: Build and Push
-        #uses: docker/build-push-action@v2
-        #with:
-          #context: .
-          #file: ./Dockerfile
-          #builder: ${{ steps.buildx.outputs.name }}
-          #push: true
-          #tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
-          #cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
-          #cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
-          
-      - name: Get latest tag
-        id: get-latest-tag
-        run: echo ::set-output name=TAG::$(git describe --abbrev=0 --tags)
-      - name: Build and push Docker image
+      - name: Build and Push
         uses: docker/build-push-action@v2
         with:
           context: .
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: |
-            dadjoke:latest
-            dadjoke:${{ github.sha }}
-            dadjoke:${{ steps.get-latest-tag.outputs.TAG }}-$(date +%Y%m%d%H%M%S)
+          tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
