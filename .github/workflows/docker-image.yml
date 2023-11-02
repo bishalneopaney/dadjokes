@@ -31,3 +31,11 @@ jobs:
           tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
+
+
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          trivy-config: trivy.yaml
