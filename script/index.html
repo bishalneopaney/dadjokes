@@ -6,12 +6,40 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<!-- Custom CSS -->
 	<style>
+		/* Circles in the background */
+		.circles {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: -1;
+		}
+
+		.circle {
+			position: absolute;
+			border-radius: 50%;
+			background: rgba(0, 0, 0, 0.3); /* Transparent background */
+			opacity: 1;
+			animation: circle-float 10s linear infinite;
+		}
+
+		@keyframes circle-float {
+			0% {
+				transform: translate(0, 0);
+			}
+			100% {
+				transform: translate(100%, 100%);
+			}
+		}
+
+		/* Rest of your styles */
 		.center {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			height: 300px;
-			background-color: #f2f2f2;
+			background-color: rgba(255, 255, 255, 0.8); /* Background with some opacity */
 			border: 1px solid #ccc;
 		}
 
@@ -21,9 +49,54 @@
 			align-items: center;
 			margin-top: 10px;
 		}
+
+		#joke {
+			font-size: 20px;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+			text-align: center;
+			color: #000;
+		}
+
+		.container {
+			padding-top: 10%;
+		}
+
+		#jokeBtn {
+			background-color: #e74c3c;
+		}
+
+		#jokeBtn:hover {
+			background-color: #c0392b;
+		}
 	</style>
 </head>
 <body>
+	<div class="circles">
+		<script>
+			const numberOfCircles = 10;
+
+			// Create and append circles to the background
+			for (let i = 0; i < numberOfCircles; i++) {
+				const circle = document.createElement("div");
+				circle.classList.add("circle");
+				circle.style.left = `${Math.random() * 100}vw`;
+				circle.style.top = `${Math.random() * 100}vh`;
+				circle.style.width = `${Math.random() * 100}px`;
+				circle.style.height = circle.style.width;
+				circle.style.backgroundColor = getRandomColor();
+				document.querySelector(".circles").appendChild(circle);
+			}
+
+			function getRandomColor() {
+				const letters = "0123456789ABCDEF";
+				let color = "#";
+				for (let i = 0; i < 6; i++) {
+					color += letters[Math.floor(Math.random() * 16)];
+				}
+				return color;
+			}
+		</script>
+	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 center">
@@ -35,16 +108,11 @@
 		</div>
 	</div>
 
+	<h4>References</h4>
+	<a href="https://icanhazdadjoke.com/api">https://icanhazdadjoke.com/api</a>
+	<p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a></p>
 
-  <h4> References </h4>
-  <a href="https://icanhazdadjoke.com/api">https://icanhazdadjoke.com/api</a>
-  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a></p>
-
-
-
-
-  <script src="script.js"></script>
-
+	<script src="script.js"></script>
 
 	<!-- Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
