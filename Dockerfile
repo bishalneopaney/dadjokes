@@ -5,7 +5,7 @@ RUN apk upgrade --force
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-MKDIR /www-data
+RUN mkdir /www-data
 
 RUN rm -rf /www-data/*
 
