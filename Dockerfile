@@ -5,10 +5,12 @@ RUN apk upgrade --force
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+MKDIR /www-data
+
 RUN rm -rf /www-data/*
 
 # TODO: Change 'folde-name' to directory one level below build files
-COPY ./script/* /www-data
+COPY ./script/* /www-data/
 
 RUN echo "nginx -g 'daemon off;'" > run.sh
 
