@@ -1,119 +1,42 @@
 
 name: Docker CI
-# on:
-#   workflow_dispatch:
+on:
+  workflow_dispatch:
   
     
-# jobs:
-#   build:
-#     name: Docker build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Check out the repo
-#         uses: actions/checkout@v2
-
-#       - name: Set up Docker Build
-#         uses: docker/setup-buildx-action@v1
-
-#       - name: Docker Login
-#         uses: docker/login-action@v1
-#         with:
-#           username: '${{ secrets.DOCKERHUB_USERNAME }}'
-#           password: '${{ secrets.DOCKERHUB_PASSWORD }}'
-
-#       - name: Build and Push
-#         uses: docker/build-push-action@v2
-#         with:
-#           context: .
-#           file: ./Dockerfile
-#           builder: ${{ steps.buildx.outputs.name }}
-#           push: true
-#           tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
-#           cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
-#           cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
-
-
-#       - name: Run Trivy vulnerability scanner in fs mode
-#         uses: aquasecurity/trivy-action@master
-#         with:
-#           scan-type: 'fs'
-#           scan-ref: '.'
-#           trivy-config: trivy.yaml
-
-
-
-# ---------------------------------------------------------------------------
-
-on:
-  pull_request:
-    types:
-      - closed
-
 jobs:
-  scan:
-    if: github.event.pull_request.merged == true
+  build:
+    name: Docker build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v3
+      - name: Check out the repo
+        uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v1
 
-      - name: Build test Docker image and use cache
-        uses: docker/build-push-action@v3
+      - name: Docker Login
+        uses: docker/login-action@v1
         with:
-          #file: by default load a Dockerfile with path to ./Dockerfile
-          load: true
-          tags: 'organization/app:${{ github.sha }}'
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          username: '${{ secrets.DOCKERHUB_USERNAME }}'
+          password: '${{ secrets.DOCKERHUB_PASSWORD }}'
 
-      - name: Run Trivy static analysis
+      - name: Build and Push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
+
+
+      - name: Run Trivy vulnerability scanner in fs mode
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          format: 'table'
-          output: 'trivy-fs-scan-results.output'
-          security-checks: 'vuln,secret,config'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+          scan-ref: '.'
+          trivy-config: trivy.yaml
 
-      - name: Store Trivy fs scan results in env
-        run: |
-          echo 'TRIVY_FS_RESULTS<<EOF' >> $GITHUB_ENV
-          cat trivy-fs-scan-results.output >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-
-      - name: Run Trivy Image Docker vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'organization/app:${{ github.sha }}'
-          format: 'table'
-          output: 'trivy-image-scan-results.output'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
-
-      - name: Store Trivy scan results in env
-        run: |
-          echo 'TRIVY_IMAGE_RESULTS<<EOF' >> $GITHUB_ENV
-          cat trivy-image-scan-results.output >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-
-      - name: Comment Trivy scan results in PR
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: |
-            ## Trivy scan results
-            
-            ### fs scan
-            ```
-            ${{ env.TRIVY_FS_RESULTS }}
-            ```
-            
-            ### Docker image scan
-            ```
-            ${{ env.TRIVY_IMAGE_RESULTS }}
-            ```
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
