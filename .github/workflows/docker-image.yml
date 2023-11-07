@@ -1,7 +1,7 @@
 
 name: Docker CI
-on:
-  workflow_dispatch:
+# on:
+#   workflow_dispatch:
   
     
 # jobs:
@@ -44,9 +44,14 @@ on:
 
 # ---------------------------------------------------------------------------
 
+on:
+  pull_request:
+    types:
+      - closed
+
 jobs:
   scan:
-    #if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
