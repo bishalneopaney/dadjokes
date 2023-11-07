@@ -1,14 +1,15 @@
-
-name: Staging docker build
-
-# Controls when the workflow will run
+name: Docker CI
 on:
   workflow_dispatch:
-
+  
+    
 jobs:
-  install-deps-lint:
+  build:
+    name: Docker build
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
 
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v1
@@ -29,11 +30,3 @@ jobs:
           tags: ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_REPO }}:buildcache,mode=max
-          
-#       - name: Deploy to Staging
-#         id: fe
-#         uses: actions-hub/kubectl@master
-#         env:
-#           KUBE_CONFIG: ${{ secrets.DO_PREPROD_KUBECONFIG }}
-#         with:
-#           args: set image deployment/est-nginx est-nginx=${{ secrets.DOCKER_REPO }}:est-${{ github.sha }} -n int
