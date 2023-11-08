@@ -10,5 +10,5 @@ I got the api form https://icanhazdadjoke.com/api.
 Anyone is welcomed to edit my code, and use docker image as pleased for educational purposes. 
 
 
-NOTE: if  the jokes r bad, dont tell me, i just used the api
+NOTE: if  the jokes are bad, dont tell me, i just used the api
 
